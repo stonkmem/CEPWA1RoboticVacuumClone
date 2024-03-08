@@ -7,7 +7,7 @@ class Robot {
       this.vel = createVector(0,0);
       this.maxSpeed = 1.5;
       this.trail = [];
-      this.bitset=[];
+      /*this.bitset=[];
       this.coords=createVector(0, 0);
       this.state = 1;
       this.FSprite = new Sprite(50, 0, 25, 25);
@@ -28,7 +28,7 @@ class Robot {
         }
         this.bitset.push(arr);
       }
-      this.bitset[1][1]=true;
+      this.bitset[1][1]=true;*/
     }
     
     insideMap(){
