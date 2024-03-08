@@ -1,10 +1,10 @@
 //'d' to rotate the robot clockwise
 //'w' to move it forward
 
-let robot
-let scoreButton
-let floorPlan
-let wall
+let robot;
+let scoreButton;
+let floorPlan;
+let wall;
 let TEST;
 function setup() {
     createCanvas(800, 600);
@@ -13,16 +13,20 @@ function setup() {
     floorPlan.createObstacles()
     wall = floorPlan.wallifier();
     TEST  = new Sprite(width-50, 50, 25, 25);
-    frameRate(1);
+    frameRate(60);
     scoreButton = createButton('check score')
     scoreButton.mousePressed(tabulate)
 }
 
 function draw() {
     background(100);
+    for(let i=25; i<=800; i+=50){
+      for(let j=25; j<=600; j+=50){
+        strokeWeight(3);point(i, j);
+      }
+    }
     robot.drawRobot();
-    robot.nav(wall);
-    robot.update();
+    robot.update(wall);
     floorPlan.update(robot);
     TEST.position = createVector(width-50+frameCount%5, 50);
     TEST.shapeColour = color(42, 165, 42);drawSprite(TEST);

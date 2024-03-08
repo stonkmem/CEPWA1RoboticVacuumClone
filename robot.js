@@ -1,8 +1,8 @@
 class Robot {
     constructor(){
-      this.sprite = new Sprite(665,25,50,50);
+      this.sprite = new Sprite(26,26,50,50);
       this.pos = this.sprite.position;
-      this.angle = PI;
+      this.angle = 0;
       this.r = 50/2;
       this.vel = createVector(0,0);
       this.maxSpeed = 1.5;
@@ -15,14 +15,20 @@ class Robot {
       this.collL=false;
       this.collR=false;
       this.collB=false;
-      for(let i=25; i<600; i+=50){
+      this.sought=false;
+      this.imageJ=0;
+      this.seek = createVector(0, 1);
+      for(let i=-25; i<=825; i+=50){
         let arr = [];
-        for(let j=25; j<800; j+=50){
-          arr.push(false);
+        for(let j=-25; j<=625; j+=50){
+          if(j==-25 || j==625 || i==-25 || i==825){
+            arr.push(true);
+          }
+          else arr.push(false);
         }
         this.bitset.push(arr);
       }
-      this.bitset[0][0]=true;
+      this.bitset[1][1]=true;
     }
     
     insideMap(){
@@ -40,18 +46,39 @@ class Robot {
       }
     }
     
-    update(){
+    update(wallist){
       //CONSECRATED
-      this.insideMap();this.vel.limit(this.maxSpeed);this.vel = p5.Vector.fromAngle(this.angle);this.pos.add(this.vel);if(frameCount % 5 == 0){this.trail.push({x: this.pos.x , y: this.pos.y});}
+      this.insideMap();
+      this.vel = p5.Vector.fromAngle(this.angle);
+      this.vel = createVector(Math.round(this.vel.x), Math.round(this.vel.y));
+      this.vel.limit(this.maxSpeed);
+      strokeWeight(3);point(this.seek);
+      // console.log(this.seek);
+      this.pos.add(this.vel);
+      this.pos = createVector(Math.round(this.pos.x), Math.round(this.pos.y));
+      if(frameCount % 5 == 0){this.trail.push({x: this.pos.x , y: this.pos.y});}
       // this.sprite.rotate = this.angle/PI * 180;
       //CONSECRATED
       this.coords=this.coordToMap(this.pos.x, this.pos.y);
-    }
-    colll(vv, spr){
-      if(vv.x>=spr.position.x - spr.width/2 && vv.x<=spr.position.x  +spr.width/2 
-      && vv.y>=spr.position.y - spr.height/2 && vv.y<=spr.position.y + spr.height/2){
-        return true;
+      if(this.sought===false || this.seek == this.pos || frameCount-this.imageJ>49){
+        this.nav(wallist);
+        console.log(this.pos);
       }
+    }
+
+    colll(vv, spr){
+      let vvcorners=[vv.x-25, vv.x+25, vv.y-25, vv.y+25];
+      strokeWeight(3);
+      rect(vvcorners[0], vvcorners[2], 50, 50);
+      point(vvcorners[0], vvcorners[2]);
+      point(vvcorners[0], vvcorners[3]);
+      point(vvcorners[1], vvcorners[2]);
+      point(vvcorners[1], vvcorners[3]);
+      let sprcorners=[spr.position.x - spr.width/2, spr.position.x  +spr.width/2, spr.position.y - spr.height/2, spr.position.y + spr.height/2]
+      if((vvcorners[0]>=sprcorners[1] || vvcorners[1]<=sprcorners[0])||(vvcorners[2]>=sprcorners[3] || vvcorners[3]<=sprcorners[2])){
+        return false;
+      }
+      else return true;
     }
     nav(wallist){
       this.collF=false;
@@ -64,7 +91,7 @@ class Robot {
       wallist.push(new Sprite(-5, height/2, 10, height));
       wallist.push(new Sprite(width+5, height/2, 10, height));
 
-      this.FSprite.pos = p5.Vector.add(this.pos, createVector(30, 0).rotate(this.angle));
+      this.FSprite.pos = p5.Vector.add(this.pos, createVector(50, 0).rotate(this.angle));
       for(let walll of wallist){
         if(this.colll(this.FSprite.pos, (walll))){
           this.collF=true;
@@ -72,51 +99,47 @@ class Robot {
       }
 
 
-      this.FSprite.pos = p5.Vector.add(this.pos, createVector(-30, 0).rotate(this.angle));
+      this.FSprite.pos = p5.Vector.add(this.pos, createVector(-50, 0).rotate(this.angle));
       for(let walll of wallist){
         if(this.colll(this.FSprite.pos, (walll))){
           this.collB=true;
         }
       }
 
-      this.FSprite.pos = p5.Vector.add(this.pos, createVector(0, 30).rotate(this.angle));
+      this.FSprite.pos = p5.Vector.add(this.pos, createVector(0, 50).rotate(this.angle));
       for(let walll of wallist){
         if(this.colll(this.FSprite.pos, (walll))){
           this.collR=true;
         }
       }
 
-      this.FSprite.pos = p5.Vector.add(this.pos, createVector(0, -30).rotate(this.angle));
+      this.FSprite.pos = p5.Vector.add(this.pos, createVector(0, -50).rotate(this.angle));
       for(let walll of wallist){
         if(this.colll(this.FSprite.pos, (walll))){
           this.collL=true;
         }
       }
+
       strokeWeight(10);point(this.FSprite.pos);
-      // FSprite.position.add(createVector(0, -100)); //Move FSprite to back
-      // for(let walll in wallist){
-      //   if(this.FSprite.overlap(walll)){
-      //     this.collL=true;
-      //   }
-      // }
-      // if(!this.collF){}
-      
-      // console.log(this.FSprite.overlap(wallist[1]));
-      this.angle+=2*PI;
-      if(!this.collL){//&& !this.bitset[this.coords.x][this.coords.y-1]
+      this.angle+=2*PI;console.log(this.bitset[this.coords.x][this.coords.y-1]);
+      if(!this.collL && !this.bitset[this.coords.x][this.coords.y-1]){//
         this.angle-=PI/2;
-        this.vel = p5.Vector.fromAngle(this.angle, 1.5);
       }
-      else if(!this.collF){}// && !this.bitset[this.coords.x+1][this.coords.y]
-      else if(!this.collR ){//&& !this.bitset[this.coords.x][this.coords.y+1]
+      else if(!this.collF && !this.bitset[this.coords.x+1][this.coords.y]){}//
+      else if(!this.collR && !this.bitset[this.coords.x][this.coords.y+1]){//
         this.angle+=PI/2;
       }
       else{this.angle+=PI;}
-      console.log(this.FSprite.pos, this.collL);
+      this.seek = this.mapToCoord(this.coords.x+1, this.coords.y);this.sought=true;this.imageJ=frameCount;
+      this.bitset[this.coordToMap(this.pos.x, this.pos.y).x][this.coordToMap(this.pos.x, this.pos.y).y]=true;
     }
     
     coordToMap(xx, yy){
-      return createVector(max(Math.floor((xx-25)/50), 0), max(Math.floor((yy-25)/50), 0));
+      return createVector(Math.floor(0.05+(xx-25)/50)+1, Math.floor(0.05+(yy-25)/50)+1);
+    }
+
+    mapToCoord(xx, yy){
+      return createVector((xx-1)*50+25, (yy-1)*50+25)
     }
 
     drawRobot(){
