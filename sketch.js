@@ -4,25 +4,29 @@
 let robot
 let scoreButton
 let floorPlan
+let wall
+let TEST;
 function setup() {
     createCanvas(800, 600);
     robot = new Robot()
     floorPlan = new FloorPlan()
     floorPlan.createObstacles()
-    const wall = floorPlan.wallifier();
-    frameRate(60)
+    wall = floorPlan.wallifier();
+    TEST  = new Sprite(width-50, 50, 25, 25);
+    frameRate(1);
     scoreButton = createButton('check score')
     scoreButton.mousePressed(tabulate)
 }
 
 function draw() {
     background(100);
-
     robot.drawRobot();
-    robot.nav();
+    robot.nav(wall);
     robot.update();
     floorPlan.update(robot);
-
+    TEST.position = createVector(width-50+frameCount%5, 50);
+    TEST.shapeColour = color(42, 165, 42);drawSprite(TEST);
+    // console.log(TEST.overlap(wall[1]));
     if(frameCount == 60*60*2){createP('done!');noLoop();}
 }
 
