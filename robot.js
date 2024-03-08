@@ -52,28 +52,23 @@ class Robot {
       this.vel = p5.Vector.fromAngle(this.angle);
       this.vel = createVector(Math.round(this.vel.x), Math.round(this.vel.y));
       this.vel.limit(this.maxSpeed);
-      strokeWeight(3);point(this.seek);
-      // console.log(this.seek);
+      strokeWeight(3);
       this.pos.add(this.vel);
       this.pos = createVector(Math.round(this.pos.x), Math.round(this.pos.y));
+      // console.log(this.seek);
+      
       if(frameCount % 5 == 0){this.trail.push({x: this.pos.x , y: this.pos.y});}
       // this.sprite.rotate = this.angle/PI * 180;
       //CONSECRATED
-      this.coords=this.coordToMap(this.pos.x, this.pos.y);
-      if(this.sought===false || this.seek == this.pos || frameCount-this.imageJ>49){
+      // this.coords=this.coordToMap(this.pos.x, this.pos.y);
+      /*if(this.sought===false || this.seek == this.pos || frameCount-this.imageJ>49){
         this.nav(wallist);
         console.log(this.pos);
-      }
+      }*/
     }
 
     colll(vv, spr){
       let vvcorners=[vv.x-25, vv.x+25, vv.y-25, vv.y+25];
-      strokeWeight(3);
-      rect(vvcorners[0], vvcorners[2], 50, 50);
-      point(vvcorners[0], vvcorners[2]);
-      point(vvcorners[0], vvcorners[3]);
-      point(vvcorners[1], vvcorners[2]);
-      point(vvcorners[1], vvcorners[3]);
       let sprcorners=[spr.position.x - spr.width/2, spr.position.x  +spr.width/2, spr.position.y - spr.height/2, spr.position.y + spr.height/2]
       if((vvcorners[0]>=sprcorners[1] || vvcorners[1]<=sprcorners[0])||(vvcorners[2]>=sprcorners[3] || vvcorners[3]<=sprcorners[2])){
         return false;
@@ -81,7 +76,7 @@ class Robot {
       else return true;
     }
     nav(wallist){
-      this.collF=false;
+      /*this.collF=false;
       this.collL=false;
       this.collR=false;
       this.collB=false;
@@ -131,16 +126,16 @@ class Robot {
       }
       else{this.angle+=PI;}
       this.seek = this.mapToCoord(this.coords.x+1, this.coords.y);this.sought=true;this.imageJ=frameCount;
-      this.bitset[this.coordToMap(this.pos.x, this.pos.y).x][this.coordToMap(this.pos.x, this.pos.y).y]=true;
+      this.bitset[this.coordToMap(this.pos.x, this.pos.y).x][this.coordToMap(this.pos.x, this.pos.y).y]=true;*/
     }
     
-    coordToMap(xx, yy){
+    /*coordToMap(xx, yy){
       return createVector(Math.floor(0.05+(xx-25)/50)+1, Math.floor(0.05+(yy-25)/50)+1);
     }
 
     mapToCoord(xx, yy){
       return createVector((xx-1)*50+25, (yy-1)*50+25)
-    }
+    }*/
 
     drawRobot(){
       this.drawTrail()
